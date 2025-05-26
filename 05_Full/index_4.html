@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unified Use Case Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx@9.5.0/dist/index.iife.min.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    textarea, input, select { font-size: 14px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900 p-6">
+  <nav class="bg-white shadow-md mb-8 p-4 flex justify-between">
+    <div class="font-bold">Unified Use Case Portal</div>
+    <div class="space-x-4">
+      <a href="#overview" class="hover:text-blue-600">Business Overview</a>
+      <a href="#table" class="hover:text-blue-600">Use Case Table</a>
+      <a href="#form" class="hover:text-blue-600">Detailed Form</a>
+    </div>
+  </nav>
+
+  <!-- Index1: Business Overview -->
+  <section id="overview" class="mb-12">
+    <h2 class="text-xl font-semibold mb-4">Business Overview</h2>
+    <form id="businessForm" class="space-y-4">
+      <textarea name="purpose" placeholder="Purpose" class="w-full p-2 border rounded"></textarea>
+      <textarea name="currentState" placeholder="Current State" class="w-full p-2 border rounded"></textarea>
+
+      <div id="challenges"><label>Challenges</label></div>
+      <button type="button" onclick="addPointer('challenges')" class="text-sm bg-blue-500 text-white px-3 py-1 rounded">+ Add</button>
+
+      <div id="focusOn"><label>Focus On</label></div>
+      <button type="button" onclick="addPointer('focusOn')" class="text-sm bg-blue-500 text-white px-3 py-1 rounded">+ Add</button>
+
+      <div id="futureState"><label>Future State</label></div>
+      <button type="button" onclick="addPointer('futureState')" class="text-sm bg-blue-500 text-white px-3 py-1 rounded">+ Add</button>
+
+      <div id="tools"><label>Tools</label></div>
+      <button type="button" onclick="addPointer('tools')" class="text-sm bg-blue-500 text-white px-3 py-1 rounded">+ Add</button>
+    </form>
+  </section>
+
+  <!-- Index2: Use Case Table -->
+  <section id="table" class="mb-12">
+    <h2 class="text-xl font-semibold mb-4">Use Case Table</h2>
+    <select id="useCaseSelect" class="p-2 border rounded">
+      <option value="User Management">User Management</option>
+      <option value="Account Management">Account Management</option>
+      <option value="Other">Other</option>
+    </select>
+    <input type="text" id="otherUseCase" class="p-2 border rounded hidden" placeholder="Custom use case" />
+    <button onclick="addUseCase()" class="ml-2 bg-blue-600 text-white px-4 py-2 rounded">Submit</button>
+    <button onclick="generateDoc()" class="ml-2 bg-green-600 text-white px-4 py-2 rounded">Export DOCX</button>
+    <table>
+      <thead><tr><th>Use Case ID</th><th>Use Case Name</th></tr></thead>
+      <tbody id="useCaseTableBody"></tbody>
+    </table>
+  </section>
+
+  <!-- Index8: Use Case Form -->
+  <section id="form">
+    <h2 class="text-xl font-semibold mb-4">Detailed Use Case Form</h2>
+    <form id="useCaseForm" class="space-y-4">
+      <input type="text" name="useCaseId" placeholder="Use Case ID" class="w-full p-2 border rounded" required />
+      <input type="text" name="useCaseName" placeholder="Use Case Name" class="w-full p-2 border rounded" required />
+      <textarea name="description" placeholder="Description" class="w-full p-2 border rounded"></textarea>
+      <textarea name="assumption" placeholder="Assumptions" class="w-full p-2 border rounded"></textarea>
+      <textarea name="preCondition" placeholder="Pre-conditions" class="w-full p-2 border rounded"></textarea>
+      <textarea name="normalFlow" placeholder="Normal Flow" class="w-full p-2 border rounded"></textarea>
+      <textarea name="notifications" placeholder="Notifications" class="w-full p-2 border rounded"></textarea>
+      <textarea name="validations" placeholder="Validations" class="w-full p-2 border rounded"></textarea>
+      <textarea name="alternateFlow" placeholder="Alternate Flow" class="w-full p-2 border rounded"></textarea>
+      <textarea name="references" placeholder="References" class="w-full p-2 border rounded"></textarea>
+    </form>
+  </section>
+
+  <script>
+    const pointerSections = ['challenges', 'focusOn', 'futureState', 'tools'];
+
+    function addPointer(id) {
+      const container = document.getElementById(id);
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'w-full p-2 border rounded mt-1';
+      container.appendChild(input);
+    }
+
+    let useCaseCounter = 1;
+    const usedCases = new Set();
+
+    function addUseCase() {
+      let selected = document.getElementById("useCaseSelect").value;
+      const isCustom = selected === "Other";
+
+      if (isCustom) {
+        selected = document.getElementById("otherUseCase").value.trim();
+        if (!selected) return alert("Enter a custom use case.");
+      }
+
+      if (usedCases.has(selected.toLowerCase())) return alert("Duplicate use case.");
+
+      const tbody = document.getElementById("useCaseTableBody");
+      const row = tbody.insertRow();
+      row.insertCell(0).innerText = `UC-${useCaseCounter.toString().padStart(3, '0')}`;
+      row.insertCell(1).innerText = selected;
+      usedCases.add(selected.toLowerCase());
+      useCaseCounter++;
+    }
+
+    function generateDoc() {
+      const { Document, Packer, Paragraph, Table, TableRow, TableCell } = window.docx;
+
+      const rows = Array.from(document.querySelectorAll('#useCaseTableBody tr')).map(tr => {
+        const cells = Array.from(tr.cells).map(td =>
+          new TableCell({ children: [new Paragraph(td.textContent)] })
+        );
+        return new TableRow({ children: cells });
+      });
+
+      const table = new Table({
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({ children: [new Paragraph("Use Case ID")] }),
+              new TableCell({ children: [new Paragraph("Use Case Name")] })
+            ]
+          }),
+          ...rows
+        ]
+      });
+
+      const doc = new Document({
+        sections: [{ children: [new Paragraph("Use Case Table"), table] }]
+      });
+
+      Packer.toBlob(doc).then(blob => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "UseCaseTable.docx";
+        a.click();
+      });
+    }
+  </script>
+</body>
+</html>
