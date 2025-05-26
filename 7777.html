@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-300">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Overview & Use Case Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx@9.5.0/dist/index.iife.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', 'Roboto', 'Segoe UI', sans-serif;
+    }
+    
+    /* Custom styles for the form sections */
+    .form-section {
+      transition: all 0.3s ease-in-out;
+    }
+    
+    .form-section.hidden {
+      display: none;
+    }
+    
+    /* Styles for the use case form (page 3) */
+    .field-group {
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    
+    .dark .field-group {
+      background: #374151;
+      border-color: #4b5563;
+    }
+    
+    .sub-fields {
+      margin-top: 10px;
+      margin-left: 20px;
+    }
+    
+    .sub-fields input {
+      margin-bottom: 8px;
+      display: block;
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    
+    .dark .sub-fields input {
+      background: #4b5563;
+      border-color: #6b7280;
+      color: white;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-white min-h-screen">
+  
+  <!-- Navigation -->
+  <nav class="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+          <span class="text-white font-bold text-sm">BM</span>
+        </div>
+        <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          Business Manager
+        </span>
+      </div>
+      <div class="flex items-center space-x-6">
+        <span id="currentStep" class="text-sm font-medium text-gray-600 dark:text-gray-300">
+          Step 1 of 3: Business Overview
+        </span>
+        <button id="toggleDark" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition">
+          🌙 Toggle Dark
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Progress Bar -->
+  <div class="max-w-7xl mx-auto px-4 py-4">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-sm font-medium text-blue-600 dark:text-blue-400">Progress</span>
+      <span id="progressText" class="text-sm text-gray-600 dark:text-gray-300">33%</span>
+    </div>
+    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+      <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500" style="width: 33%"></div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl mx-auto p-6">
+    
+    <!-- Page 1: Business Overview Form -->
+    <section id="page1" class="form-section bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          Business Overview
+        </h1>
+        <p class="text-gray-600 dark:text-gray-300">Define your business context and objectives</p>
+      </div>
+      
+      <form id="businessForm" class="space-y-6">
+        <div class="space-y-4">
+          <div>
+            <label class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Purpose:</label>
+            <textarea name="purpose" rows="3" required 
+                      class="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white resize-none"></textarea>
+          </div>
+
+          <div>
+            <label class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Current State of the Business:</label>
+            <textarea name="currentState" rows="3" required 
+                      class="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white resize-none"></textarea>
+          </div>
+
+          <div id="challenges" class="pointer-section">
+            <label class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Challenges:</label>
+            <button type="button" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-2 px-4 rounded-lg mb-3 transition" onclick="addPointer('challenges')">
+              + Add Challenge
+            </button>
+          </div>
+
+          <div id="focusOn" class="pointer-section">
+            <label class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Focus On:</label>
+            <button type="button" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-2 px-4 rounded-lg mb-3 transition" onclick="addPointer('focusOn')">
+              + Add Focus Point
+            </button>
+          </div>
+
+          <div id="futureState" class="pointer-section">
+            <label class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Future State of the Business:</label>
+            <button type="button" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-2 px-4 rounded-lg mb-3 transition" onclick="addPointer('futureState')">
+              + Add Future Goal
+            </button>
+          </div>
+
+          <div id="tools" class="pointer-section">
+            <label class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Tools and Technology:</label>
+            <button type="button" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-2 px-4 rounded-lg mb-3 transition" onclick="addPointer('tools')">
+              + Add Tool
+            </button>
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-6">
+          <button type="button" onclick="nextPage()" 
+                  class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium py-3 px-8 rounded-lg transition">
+            Next: Use Case Table →
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Page 2: Use Case Table Generator -->
+    <section id="page2" class="form-section bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8 hidden">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          Use Case Table Generator
+        </h1>
+        <p class="text-gray-600 dark:text-gray-300">Create and manage your use cases</p>
+      </div>
+
+      <div class="space-y-6">
+        <div>
+          <label for="useCaseSelect" class="block text-gray-700 dark:text-gray-200 font-semibold mb-2">Select Use Case:</label>
+          <select id="useCaseSelect" class="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+            <option value="User Management">User Management</option>
+            <option value="Account Management">Account Management</option>
+            <option value="Visit Management">Visit Management</option>
+            <option value="Contact Management">Contact Management</option>
+            <option value="Opportunity Management">Opportunity Management</option>
+            <option value="Opportunity Line-Item Management">Opportunity Line-Item Management</option>
+            <option value="Expense Management">Expense Management</option>
+            <option value="Product and Pricebook Management">Product and Pricebook Management</option>
+            <option value="Report and Dashboard Management">Report and Dashboard Management</option>
+            <option value="Other">Other</option>
+          </select>
+          <input type="text" id="otherUseCase" placeholder="Enter custom use case"
+                 class="mt-4 w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg hidden dark:bg-gray-700 dark:text-white" />
+        </div>
+
+        <div class="flex gap-4">
+          <button onclick="addUseCase()"
+                  class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-medium transition">
+            Add Use Case
+          </button>
+        </div>
+
+        <div class="overflow-x-auto bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+          <table class="w-full border border-gray-200 dark:border-gray-600 text-sm">
+            <thead class="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+              <tr>
+                <th class="py-3 px-4 border dark:border-gray-600 font-semibold">Use Case ID</th>
+                <th class="py-3 px-4 border dark:border-gray-600 font-semibold">Use Case Name</th>
+              </tr>
+            </thead>
+            <tbody id="useCaseTableBody" class="bg-white dark:bg-gray-800 text-gray-800 dark:text-white"></tbody>
+          </table>
+        </div>
+
+        <div class="flex justify-between pt-6">
+          <button onclick="previousPage()" 
+                  class="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-medium py-3 px-8 rounded-lg transition">
+            ← Previous
+          </button>
+          <button onclick="nextPage()" 
+                  class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium py-3 px-8 rounded-lg transition">
+            Next: Use Case Details →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Page 3: Use Case Form -->
+    <section id="page3" class="form-section bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8 hidden">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          Use Case Details
+        </h1>
+        <p class="text-gray-600 dark:text-gray-300">Define detailed use case specifications</p>
+      </div>
+
+      <form id="useCaseForm" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="useCaseIdSelect" class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Use Case ID</label>
+            <select id="useCaseIdSelect" name="useCaseIdSelect" onchange="toggleInputField(this, 'customUseCaseId')"
+                    class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+              <option value="">--Select--</option>
+              <option value="UC-001">UC-001</option>
+              <option value="UC-002">UC-002</option>
+              <option value="UC-003">UC-003</option>
+              <option value="UC-004">UC-004</option>
+              <option value="UC-005">UC-005</option>
+              <option value="UC-006">UC-006</option>
+              <option value="UC-007">UC-007</option>
+              <option value="UC-008">UC-008</option>
+              <option value="UC-009">UC-009</option>
+              <option value="UC-010">UC-010</option>
+              <option value="UC-011">UC-011</option>
+              <option value="UC-012">UC-012</option>
+              <option value="Other">Other</option>
+            </select>
+            <input type="text" id="customUseCaseId" name="customUseCaseId" placeholder="Enter Use Case ID" 
+                   class="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white hidden" />
+          </div>
+
+          <div>
+            <label for="useCaseNameSelect" class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Use Case Name</label>
+            <select id="useCaseNameSelect" name="useCaseNameSelect" onchange="toggleInputField(this, 'customUseCaseName')"
+                    class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+              <option value="">--Select--</option>
+              <option value="Account Management">Account Management</option>
+              <option value="Contact Management">Contact Management</option>
+              <option value="Opportunity Management">Opportunity Management</option>
+              <option value="Opportunity Line-item Management">Opportunity Line-item Management</option>
+              <option value="Quotation Management">Quotation Management</option>
+              <option value="Price Management">Price Management</option>
+              <option value="Product Management">Product Management</option>
+              <option value="Expense Management">Expense Management</option>
+              <option value="Visit Management">Visit Management</option>
+              <option value="Other">Other</option>
+            </select>
+            <input type="text" id="customUseCaseName" name="customUseCaseName" placeholder="Enter Use Case Name" 
+                   class="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white hidden" />
+          </div>
+        </div>
+
+        <div>
+          <label for="actorsSelect" class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Actors</label>
+          <select id="actorsSelect" name="actorsSelect" multiple
+                  class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+            <option value="Admin">Admin System</option>
+            <option value="User">Sales User</option>
+            <option value="RM">RM</option>
+            <option value="Other">Other</option>
+          </select>
+          <input type="text" id="customActors" name="customActors" placeholder="Enter Custom Actor" 
+                 class="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white hidden" />
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="description" class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Description</label>
+            <textarea id="description" name="description" rows="3"
+                      class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white resize-none"></textarea>
+          </div>
+
+          <div>
+            <label for="assumption" class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Assumption</label>
+            <textarea id="assumption" name="assumption" rows="3"
+                      class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white resize-none"></textarea>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="preCondition" class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Pre-Condition</label>
+            <textarea id="preCondition" name="preCondition" rows="3"
+                      class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white resize-none"></textarea>
+          </div>
+
+          <div>
+            <label for="normalFlow" class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Normal Flow</label>
+            <input type="text" id="normalFlow" name="normalFlow" 
+                   class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" />
+          </div>
+        </div>
+
+        <!-- Optional Fields with N/A -->
+        <div class="space-y-4">
+          <div>
+            <label for="notifications" class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">
+              Notifications
+              <label class="ml-4 text-sm font-normal">
+                <input type="radio" name="notificationsNA" onclick="toggleNA(this, 'notifications')" class="mr-1" /> N/A
+              </label>
+            </label>
+            <textarea id="notifications" name="notifications" rows="2"
+                      class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white resize-none"></textarea>
+          </div>
+
+          <div>
+            <label for="validations" class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">
+              Validations
+              <label class="ml-4 text-sm font-normal">
+                <input type="radio" name="validationsNA" onclick="toggleNA(this, 'validations')" class="mr-1" /> N/A
+              </label>
+            </label>
+            <textarea id="validations" name="validations" rows="2"
+                      class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white resize-none"></textarea>
+          </div>
+
+          <div>
+            <label for="alternateFlow" class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">
+              Alternate Flow
+              <label class="ml-4 text-sm font-normal">
+                <input type="radio" name="alternateFlowNA" onclick="toggleNA(this, 'alternateFlow')" class="mr-1" /> N/A
+              </label>
+            </label>
+            <textarea id="alternateFlow" name="alternateFlow" rows="2"
+                      class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white resize-none"></textarea>
+          </div>
+
+          <div>
+            <label for="references" class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">
+              References
+              <label class="ml-4 text-sm font-normal">
+                <input type="radio" name="referencesNA" onclick="toggleNA(this, 'references')" class="mr-1" /> N/A
+              </label>
+            </label>
+            <textarea id="references" name="references" rows="2"
+                      class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white resize-none"></textarea>
+          </div>
+        </div>
+
+        <!-- Custom Fields -->
+        <div>
+          <label class="block font-semibold mb-2 text-gray-700 dark:text-gray-200">Custom Fields</label>
+          <div id="fieldsContainer" class="space-y-3"></div>
+          <button type="button" onclick="addField()" 
+                  class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-medium py-2 px-4 rounded-lg transition">
+            + Add Field
+          </button>
+        </div>
+
+        <div class="flex justify-between pt-6">
+          <button type="button" onclick="previousPage()" 
+                  class="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-medium py-3 px-8 rounded-lg transition">
+            ← Previous
+          </button>
+          <div class="space-x-4">
+            <button type="submit" 
+                    class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium py-3 px-8 rounded-lg transition">
+              Submit Use Case
+            </button>
+            <button type="button" onclick="resetUseCaseForm()" 
+                    class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-3 px-6 rounded-lg transition">
+              New Form
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Results Display -->
+      <div id="resultTableContainer" class="mt-8 space-y-6"></div>
+    </section>
+  </main>
+
+  <script>
+    // Global variables
+    let currentPage = 1;
+    let useCaseCounter = 1;
+    const usedCases = new Set();
+    const usedUseCaseIds = new Set();
+    const usedUseCaseNames = new Set();
+    const usedActors = new Set();
+    const pointerSections = ['challenges', 'focusOn', 'futureState', 'tools'];
+
+    // Initialize the application
+    window.onload = () => {
+      pointerSections.forEach(section => addPointer(section));
+      loadFormFromMemory();
+      setupEventListeners();
+    };
+
+    // Event listeners setup
+    function setupEventListeners() {
+      // Dark mode toggle
+      document.getElementById('toggleDark').addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+      });
+
+      // Use case select change
+      document.getElementById('useCaseSelect').addEventListener('change', () => {
+        const otherInput = document.getElementById('otherUseCase');
+        otherInput.classList.toggle('hidden', document.getElementById('useCaseSelect').value !== 'Other');
+      });
+
+      // Business form submit
+      document.getElementById('businessForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        saveBusinessForm();
+        nextPage();
+      });
+
+      // Use case form submit
+      document.getElementById('useCaseForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitUseCase();
+      });
+    }
+
+    // Navigation functions
+    function nextPage() {
+      if (currentPage < 3) {
+        // Validate current page before proceeding
+        if (currentPage === 1 && !validateBusinessForm()) {
+          return;
+        }
+        
+        document.getElementById(`page${currentPage}`).classList.add('hidden');
+        currentPage++;
+        document.getElementById(`page${currentPage}`).classList.remove('hidden');
+        updateProgress();
+      }
+    }
+
+    function previousPage() {
+      if (currentPage > 1) {
+        document.getElementById(`page${currentPage}`).classList.add('hidden');
+        currentPage--;
+        document.getElementById(`page${currentPage}`).classList.remove('hidden');
+        updateProgress();
+      }
+    }
+
+    function updateProgress() {
+      const progress = (currentPage / 3) * 100;
+      document.getElementById('progressBar').style.width = `${progress}%`;
+      document.getElementById('progressText').textContent = `${Math.round(progress)}%`;
+      
+      const steps = [
+        'Step 1 of 3: Business Overview',
+        'Step 2 of 3: Use Case Table',
+        'Step 3 of 3: Use Case Details'
+      ];
+      document.getElementById('currentStep').textContent = steps[currentPage - 1];
+    }
+
+    // Page 1: Business Overview Functions
+    function addPointer(sectionId) {
+      const container = document.getElementById(sectionId);
+      const inputWrapper = document.createElement('div');
+      inputWrapper.className = 'flex items-center gap-2 mb-2';
+      
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Enter a point...';
+      input.className = 'flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white';
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.innerHTML = '✕';
+      removeBtn.className = 'text-red-500 hover:text-red-700 font-bold text-lg px-2';
+      removeBtn.onclick = () => inputWrapper.remove();
+      
+      inputWrapper.appendChild(input);
+      inputWrapper.appendChild(removeBtn);
+      container.appendChild(inputWrapper);
+    }
+
+    function validateBusinessForm() {
+      const purpose = document.querySelector('[name="purpose"]').value.trim();
+      const currentState = document.querySelector('[name="currentState"]').value.trim();
+      
+      if (!purpose || !currentState) {
+        alert('Please fill in all required fields (Purpose and Current State).');
+        return false;
+      }
+      return true;
+    }
+
+    function saveBusinessForm() {
+      const formData = {
+        purpose: document.querySelector('[name="purpose"]').value,
+        currentState: document.querySelector('[name="currentState"]').value,
+        challenges: getPointers('challenges'),
+        focusOn: getPointers('focusOn'),
+        futureState: getPointers('futureState'),
+        tools: getPointers('tools')
+      };
+      // Store in memory instead of localStorage
+      window.businessFormData = formData;
+    }
+
+    function loadFormFromMemory() {
+      const saved = window.businessFormData;
+      if (!saved) return;
+      
+      document.querySelector('[name="purpose"]').value = saved.purpose || '';
+      document.querySelector('[name="currentState"]').value = saved.currentState || '';
+      
+      pointerSections.forEach(section => {
+        const container = document.getElementById(section);
+        // Clear existing inputs except the first one
+        const inputs = container.querySelectorAll('input');
+        inputs.forEach(input => input.parentElement.remove());
+        
+        // Add saved points
+        if (saved[section] && saved[section].length > 0) {
+          saved[section].forEach(point => {
+            addPointer(section);
+            const newInput = container.querySelector('input:last-of-type');
+            if (newInput) newInput.value = point;
+          });
+        } else {
+          addPointer(section);
+        }
+      });
+    }
+
+    function getPointers(id) {
+      const inputs = Array.from(document.getElementById(id).querySelectorAll('input'));
+      return inputs.map(input => input.value.trim()).filter(value => value !== '');
+    }
+
+    // Page 2: Use Case Table Functions
+    function addUseCase() {
+      const select = document.getElementById('useCaseSelect');
+      const otherInput = document.getElementById('otherUseCase');
+      
+      let useCaseName = select.value;
+      if (useCaseName === 'Other') {
+        useCaseName = otherInput.value.trim();
+        if (!useCaseName) {
+          alert('Please enter a custom use case name.');
+          return;
+        }
+      }
+      
+      if (usedCases.has(useCaseName)) {
+        alert('This use case has already been added.');
+        return;
+      }
+      
+      const useCaseId = `UC-${String(useCaseCounter).padStart(3, '0')}`;
+      usedCases.add(useCaseName);
+      useCaseCounter++;
+      
+      const tableBody = document.getElementById('useCaseTableBody');
+      const row = document.createElement('tr');
+      row.className = 'border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700';
+      row.innerHTML = `
+        <td class="py-3 px-4 border dark:border-gray-600">${useCaseId}</td>
+        <td class="py-3 px-4 border dark:border-gray-600">${useCaseName}</td>
+      `;
+      tableBody.appendChild(row);
+      
+      // Reset form
+      select.selectedIndex = 0;
+      otherInput.value = '';
+      otherInput.classList.add('hidden');
+    }
+
+    // Page 3: Use Case Form Functions
+    function toggleInputField(selectElement, inputId) {
+      const inputElement = document.getElementById(inputId);
+      const isOther = selectElement.value === 'Other';
+      
+      inputElement.classList.toggle('hidden', !isOther);
+      if (isOther) {
+        inputElement.focus();
+      } else {
+        inputElement.value = '';
+      }
+    }
+
+    function toggleNA(checkbox, fieldId) {
+      const field = document.getElementById(fieldId);
+      if (checkbox.checked) {
+        field.value = 'N/A';
+        field.disabled = true;
+        field.classList.add('bg-gray-100', 'dark:bg-gray-600');
+      } else {
+        field.value = '';
+        field.disabled = false;
+        field.classList.remove('bg-gray-100', 'dark:bg-gray-600');
+      }
+    }
+
+    function addField() {
+      const container = document.getElementById('fieldsContainer');
+      const fieldGroup = document.createElement('div');
+      fieldGroup.className = 'field-group';
+      
+      const fieldId = `field_${Date.now()}`;
+      fieldGroup.innerHTML = `
+        <div class="flex items-center gap-2 mb-2">
+          <input type="text" placeholder="Field Name" class="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:text-white">
+          <button type="button" onclick="this.closest('.field-group').remove()" class="text-red-500 hover:text-red-700 font-bold px-2">✕</button>
+        </div>
+        <div class="sub-fields">
+          <input type="text" placeholder="Sub-field 1">
+          <input type="text" placeholder="Sub-field 2">
+          <button type="button" onclick="addSubField(this)" class="text-blue-500 hover:text-blue-700 text-sm">+ Add Sub-field</button>
+        </div>
+      `;
+      
+      container.appendChild(fieldGroup);
+    }
+
+    function addSubField(button) {
+      const subFields = button.parentElement;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = `Sub-field ${subFields.querySelectorAll('input').length + 1}`;
+      subFields.insertBefore(input, button);
+    }
+
+    function submitUseCase() {
+      const formData = new FormData(document.getElementById('useCaseForm'));
+      const data = {};
+      
+      // Process form data
+      for (let [key, value] of formData.entries()) {
+        data[key] = value;
+      }
+      
+      // Handle custom fields
+      data.customFields = [];
+      const fieldGroups = document.querySelectorAll('.field-group');
+      fieldGroups.forEach(group => {
+        const fieldName = group.querySelector('input[placeholder="Field Name"]')?.value;
+        if (fieldName) {
+          const subFields = Array.from(group.querySelectorAll('.sub-fields input'))
+            .map(input => input.value.trim())
+            .filter(value => value !== '');
+          
+          data.customFields.push({
+            name: fieldName,
+            subFields: subFields
+          });
+        }
+      });
+      
+      // Handle actors
+      const actorsSelect = document.getElementById('actorsSelect');
+      const selectedActors = Array.from(actorsSelect.selectedOptions).map(option => option.value);
+      const customActors = document.getElementById('customActors').value.trim();
+      
+      if (selectedActors.includes('Other') && customActors) {
+        selectedActors.push(customActors);
+      }
+      data.actors = selectedActors.filter(actor => actor !== 'Other');
+      
+      // Generate and display result
+      displayUseCaseResult(data);
+      
+      // Show success message
+      alert('Use case submitted successfully!');
+    }
+
+    function displayUseCaseResult(data) {
+      const container = document.getElementById('resultTableContainer');
+      
+      const resultDiv = document.createElement('div');
+      resultDiv.className = 'bg-gray-50 dark:bg-gray-700 rounded-lg p-6 border border-gray-200 dark:border-gray-600';
+      
+      let html = `
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-bold text-gray-800 dark:text-white">Use Case Result</h3>
+          <div class="space-x-2">
+            <button onclick="downloadWord(this.closest('.bg-gray-50, .bg-gray-700'))" 
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm transition">
+              📄 Download Word
+            </button>
+            <button onclick="this.closest('.bg-gray-50, .bg-gray-700').remove()" 
+                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm transition">
+              ✕ Remove
+            </button>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border border-gray-300 dark:border-gray-600 text-sm">
+            <tbody class="bg-white dark:bg-gray-800">
+      `;
+      
+      const fields = [
+        ['Use Case ID', getFieldValue(data, 'useCaseIdSelect', 'customUseCaseId')],
+        ['Use Case Name', getFieldValue(data, 'useCaseNameSelect', 'customUseCaseName')],
+        ['Actors', data.actors ? data.actors.join(', ') : ''],
+        ['Description', data.description || ''],
+        ['Assumption', data.assumption || ''],
+        ['Pre-Condition', data.preCondition || ''],
+        ['Normal Flow', data.normalFlow || ''],
+        ['Notifications', data.notifications || ''],
+        ['Validations', data.validations || ''],
+        ['Alternate Flow', data.alternateFlow || ''],
+        ['References', data.references || '']
+      ];
+      
+      fields.forEach(([label, value]) => {
+        html += `
+          <tr class="border-b border-gray-200 dark:border-gray-600">
+            <td class="py-3 px-4 font-semibold bg-gray-100 dark:bg-gray-700 border-r border-gray-300 dark:border-gray-600 w-1/4">${label}</td>
+            <td class="py-3 px-4">${value || 'N/A'}</td>
+          </tr>
+        `;
+      });
+      
+      // Add custom fields
+      if (data.customFields && data.customFields.length > 0) {
+        data.customFields.forEach(field => {
+          html += `
+            <tr class="border-b border-gray-200 dark:border-gray-600">
+              <td class="py-3 px-4 font-semibold bg-gray-100 dark:bg-gray-700 border-r border-gray-300 dark:border-gray-600">${field.name}</td>
+              <td class="py-3 px-4">${field.subFields.join(', ') || 'N/A'}</td>
+            </tr>
+          `;
+        });
+      }
+      
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+      
+      resultDiv.innerHTML = html;
+      container.appendChild(resultDiv);
+      
+      // Store data for Word export
+      resultDiv.useCaseData = data;
+    }
+
+    function getFieldValue(data, selectName, customName) {
+      const selectValue = data[selectName];
+      return selectValue === 'Other' ? data[customName] || '' : selectValue || '';
+    }
+
+    function resetUseCaseForm() {
+      document.getElementById('useCaseForm').reset();
+      
+      // Reset custom input visibility
+      document.getElementById('customUseCaseId').classList.add('hidden');
+      document.getElementById('customUseCaseName').classList.add('hidden');
+      document.getElementById('customActors').classList.add('hidden');
+      
+      // Clear custom fields
+      document.getElementById('fieldsContainer').innerHTML = '';
+      
+      // Reset N/A checkboxes
+      const naCheckboxes = document.querySelectorAll('input[type="radio"][name$="NA"]');
+      naCheckboxes.forEach(checkbox => {
+        checkbox.checked = false;
+        const fieldId = checkbox.getAttribute('onclick').match(/toggleNA\(this, '(.+)'\)/)[1];
+        const field = document.getElementById(fieldId);
+        field.disabled = false;
+        field.classList.remove('bg-gray-100', 'dark:bg-gray-600');
+      });
+    }
+
+    async function downloadWord(container) {
+      if (!window.docx) {
+        alert('Word export functionality is not available. Please ensure the docx library is loaded.');
+        return;
+      }
+      
+      const data = container.useCaseData;
+      if (!data) {
+        alert('No data available for export.');
+        return;
+      }
+      
+      try {
+        const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType } = docx;
+        
+        const doc = new Document({
+          sections: [{
+            properties: {},
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: "Use Case Specification",
+                    bold: true,
+                    size: 32
+                  })
+                ]
+              }),
+              new Paragraph({ text: "" }), // Empty line
+              
+              // Create table with use case details
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        width: { size: 30, type: WidthType.PERCENTAGE },
+                        children: [new Paragraph({ children: [new TextRun({ text: "Use Case ID", bold: true })] })]
+                      }),
+                      new TableCell({
+                        width: { size: 70, type: WidthType.PERCENTAGE },
+                        children: [new Paragraph({ text: getFieldValue(data, 'useCaseIdSelect', 'customUseCaseId') })]
+                      })
+                    ]
+                  }),
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [new Paragraph({ children: [new TextRun({ text: "Use Case Name", bold: true })] })]
+                      }),
+                      new TableCell({
+                        children: [new Paragraph({ text: getFieldValue(data, 'useCaseNameSelect', 'customUseCaseName') })]
+                      })
+                    ]
+                  }),
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [new Paragraph({ children: [new TextRun({ text: "Actors", bold: true })] })]
+                      }),
+                      new TableCell({
+                        children: [new Paragraph({ text: data.actors ? data.actors.join(', ') : 'N/A' })]
+                      })
+                    ]
+                  }),
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [new Paragraph({ children: [new TextRun({ text: "Description", bold: true })] })]
+                      }),
+                      new TableCell({
+                        children: [new Paragraph({ text: data.description || 'N/A' })]
+                      })
+                    ]
+                  }),
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [new Paragraph({ children: [new TextRun({ text: "Assumption", bold: true })] })]
+                      }),
+                      new TableCell({
+                        children: [new Paragraph({ text: data.assumption || 'N/A' })]
+                      })
+                    ]
+                  }),
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [new Paragraph({ children: [new TextRun({ text: "Pre-Condition", bold: true })] })]
+                      }),
+                      new TableCell({
+                        children: [new Paragraph({ text: data.preCondition || 'N/A' })]
+                      })
+                    ]
+                  }),
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [new Paragraph({ children: [new TextRun({ text: "Normal Flow", bold: true })] })]
+                      }),
+                      new TableCell({
+                        children: [new Paragraph({ text: data.normalFlow || 'N/A' })]
+                      })
+                    ]
+                  }),
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [new Paragraph({ children: [new TextRun({ text: "Notifications", bold: true })] })]
+                      }),
+                      new TableCell({
+                        children: [new Paragraph({ text: data.notifications || 'N/A' })]
+                      })
+                    ]
+                  }),
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [new Paragraph({ children: [new TextRun({ text: "Validations", bold: true })] })]
+                      }),
+                      new TableCell({
+                        children: [new Paragraph({ text: data.validations || 'N/A' })]
+                      })
+                    ]
+                  }),
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [new Paragraph({ children: [new TextRun({ text: "Alternate Flow", bold: true })] })]
+                      }),
+                      new TableCell({
+                        children: [new Paragraph({ text: data.alternateFlow || 'N/A' })]
+                      })
+                    ]
+                  }),
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [new Paragraph({ children: [new TextRun({ text: "References", bold: true })] })]
+                      }),
+                      new TableCell({
+                        children: [new Paragraph({ text: data.references || 'N/A' })]
+                      })
+                    ]
+                  })
+                ]
+              })
+            ]
+          }]
+        });
+        
+        const blob = await Packer.toBlob(doc);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `UseCase_${getFieldValue(data, 'useCaseIdSelect', 'customUseCaseId') || 'Document'}.docx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+      } catch (error) {
+        console.error('Error generating Word document:', error);
+        alert('Error generating Word document. Please try again.');
+      }
+    }
+  </script>
+</body>
+</html>
