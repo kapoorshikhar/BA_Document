@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Use Case Table Export</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 8px; }
+    input, select, button { margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <h2>Use Case Table Generator</h2>
+
+  <label for="useCaseSelect">Select Use Case:</label>
+  <select id="useCaseSelect">
+    <option value="User Management">User Management</option>
+    <option value="Account Management">Account Management</option>
+    <option value="Visit Management">Visit Management</option>
+    <option value="Contact Management">Contact Management</option>
+    <option value="Opportunity Management">Opportunity Management</option>
+    <option value="Opportunity Line-Item Management">Opportunity Line-Item Management</option>
+    <option value="Expense Management">Expense Management</option>
+    <option value="Product and Pricebook Management">Product and Pricebook Management</option>
+    <option value="Report and Dashboard Management">Report and Dashboard Management</option>
+    <option value="Other">Other</option>
+  </select>
+
+  <input type="text" id="customUseCase" placeholder="Enter custom use case" style="display:none;" />
+  <br />
+  <button onclick="addUseCase()">Submit</button>
+  <button onclick="exportToWord()">Export to Word</button>
+
+  <table id="useCaseTable" style="margin-top: 20px;">
+    <thead>
+      <tr>
+        <th>Use Case ID</th>
+        <th>Use Case Name</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    let count = 1;
+
+    document.getElementById("useCaseSelect").addEventListener("change", function () {
+      document.getElementById("customUseCase").style.display = this.value === "Other" ? "inline-block" : "none";
+    });
+
+    function addUseCase() {
+      const select = document.getElementById("useCaseSelect");
+      const other = document.getElementById("customUseCase");
+
+      let value = select.value;
+      if (value === "Other") {
+        value = other.value.trim();
+        if (!value) return alert("Please enter a custom use case name.");
+      }
+
+      const table = document.getElementById("useCaseTable").querySelector("tbody");
+      const row = table.insertRow();
+      row.insertCell(0).innerText = `UC-${String(count).padStart(3, '0')}`;
+      row.insertCell(1).innerText = value;
+      count++;
+
+      select.value = "User Management";
+      other.style.display = "none";
+      other.value = "";
+    }
+
+    function exportToWord() {
+      const header = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office'
+              xmlns:w='urn:schemas-microsoft-com:office:word'
+              xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><meta charset='utf-8'></head><body>`;
+      const footer = "</body></html>";
+      const content = document.getElementById("useCaseTable").outerHTML;
+
+      const html = header + `<h2>Use Case Table</h2>` + content + footer;
+      const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'UseCaseTable.doc';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
