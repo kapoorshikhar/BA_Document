@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Business Overview Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f7f9fc;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .container {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 700px;
+      margin: auto;
+      padding: 30px 40px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+      color: #333;
+    }
+
+    label {
+      font-weight: 600;
+      margin-top: 20px;
+      display: block;
+      color: #444;
+    }
+
+    textarea, input {
+      width: 100%;
+      padding: 10px 14px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .pointer-section input {
+      margin-bottom: 10px;
+    }
+
+    .add-btn {
+      background-color: #680481;
+      border: none;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 6px;
+      color: #fffdfd;
+      margin-bottom: 10px;
+    }
+
+    .add-btn:hover {
+      background-color: #d078e6;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    button[type="submit"], .export-docx {
+      background-color: #4f46e5;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      flex: 1;
+      min-width: 150px;
+    }
+
+    button[type="submit"]:hover, .export-docx:hover {
+      background-color: #4338ca;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Business Overview Form</h1>
+    <form id="businessForm">
+      <label>Purpose:</label>
+      <textarea name="purpose" rows="3" required></textarea>
+
+      <label>Current State of the Business:</label>
+      <textarea name="currentState" rows="3" required></textarea>
+
+      <div class="pointer-section" id="challenges">
+        <label>Challenges:</label>
+        <button type="button" class="add-btn" onclick="addPointer('challenges')">+ Add Point</button>
+      </div>
+
+      <div class="pointer-section" id="focusOn">
+        <label>Focus On:</label>
+        <button type="button" class="add-btn" onclick="addPointer('focusOn')">+ Add Point</button>
+      </div>
+
+      <div class="pointer-section" id="futureState">
+        <label>Future State of the Business:</label>
+        <button type="button" class="add-btn" onclick="addPointer('futureState')">+ Add Point</button>
+      </div>
+
+      <div class="pointer-section" id="Function">
+        <label>Functional Requirements:</label>
+        <button type="button" class="add-btn" onclick="addPointer('Function')">+ Add Point</button>
+      </div>
+
+      <div class="pointer-section" id="tools">
+        <label>Tools and Technology:</label>
+        <button type="button" class="add-btn" onclick="addPointer('tools')">+ Add Point</button>
+      </div>
+
+      <div class="btn-group">
+        <button type="submit">Download as .txt</button>
+        <button type="button" class="export-docx" onclick="exportToWord()">Export as .docx</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const pointerSections = ['challenges', 'focusOn', 'futureState', 'Function', 'tools'];
+
+    function addPointer(sectionId) {
+      const container = document.getElementById(sectionId);
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Enter a point...';
+      container.appendChild(input);
+    }
+
+    function getPointers(id) {
+      const inputs = Array.from(document.getElementById(id).querySelectorAll('input'));
+      return inputs.map(input => input.value.trim()).filter(val => val.length > 0);
+    }
+
+    function generateText() {
+      const purpose = document.forms[0].purpose.value.trim();
+      const currentState = document.forms[0].currentState.value.trim();
+
+      return `Purpose:
+${purpose}
+
+Current State of the Business:
+${currentState}
+
+Challenges:
+• ${getPointers('challenges').join('\n• ')}
+
+Focus On:
+• ${getPointers('focusOn').join('\n• ')}
+
+Future State of the Business:
+• ${getPointers('futureState').join('\n• ')}
+
+Functional Requirements:
+• ${getPointers('Function').join('\n• ')}
+
+Tools and Technology:
+• ${getPointers('tools').join('\n• ')}`;
+    }
+
+    document.getElementById('businessForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const data = generateText();
+      const blob = new Blob([data], { type: 'text/plain' });
+      saveAs(blob, 'business_overview.txt');
+    });
+
+    function exportToWord() {
+      const purpose = document.forms[0].purpose.value.trim();
+      const currentState = document.forms[0].currentState.value.trim();
+      
+      // Create HTML with Word-compatible heading styles
+      const htmlContent = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+              xmlns:w='urn:schemas-microsoft-com:office:word' 
+              xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+          <meta charset='utf-8'>
+          <title>Business Overview</title>
+          <style>
+            h1 {
+              font-size: 16pt;
+              color: #2E74B5;
+              font-weight: bold;
+              margin-top: 24pt;
+              margin-bottom: 6pt;
+            }
+            p, li {
+              font-size: 11pt;
+              margin-bottom: 6pt;
+              line-height: 1.15;
+            }
+            ul {
+              margin-left: 36pt;
+              padding-left: 0;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Purpose</h1>
+          <p>${purpose.replace(/\n/g, '</p><p>')}</p>
+          
+          <h1>Current State of the Business</h1>
+          <p>${currentState.replace(/\n/g, '</p><p>')}</p>
+          
+          <h1>Challenges</h1>
+          <ul>${getPointers('challenges').map(point => `<li>${point}</li>`).join('')}</ul>
+          
+          <h1>Focus On</h1>
+          <ul>${getPointers('focusOn').map(point => `<li>${point}</li>`).join('')}</ul>
+          
+          <h1>Future State of the Business</h1>
+          <ul>${getPointers('futureState').map(point => `<li>${point}</li>`).join('')}</ul>
+          
+          <h1>Functional Requirements</h1>
+          <ul>${getPointers('Function').map(point => `<li>${point}</li>`).join('')}</ul>
+          
+          <h1>Tools and Technology</h1>
+          <ul>${getPointers('tools').map(point => `<li>${point}</li>`).join('')}</ul>
+        </body>
+        </html>
+      `;
+
+      const blob = new Blob(['\ufeff', htmlContent], {
+        type: 'application/msword',
+      });
+
+      saveAs(blob, 'business_overview.doc');
+    }
+
+    // Initialize each pointer section with one input
+    pointerSections.forEach(addPointer);
+  </script>
+</body>
+</html>
