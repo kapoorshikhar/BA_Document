@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Use Case Form</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #e0f0ff;
+      color: #333;
+      padding: 40px;
+      line-height: 1.6;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #2c3e50;
+    }
+
+    form {
+      max-width: 800px;
+      margin: 0 auto 50px;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 20px;
+      color: #34495e;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    .field-group {
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .sub-fields {
+      margin-top: 10px;
+      margin-left: 20px;
+    }
+
+    .sub-fields input {
+      margin-bottom: 8px;
+      display: block;
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin-top: 15px;
+      margin-right: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      margin-top: 30px;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    td,
+    th {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #f0f2f5;
+      font-weight: 600;
+    }
+
+    ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+
+    h3 {
+      margin-top: 40px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #e62a2a;
+      padding-bottom: 5px;
+      color: #538bc4;
+    }
+  </style>
+</head>
+<body>
+  <nav class="bg-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- Left: Logo -->
+      <div class="flex items-center space-x-2">
+        <img src="/logo.png" alt="Logo" class="h-8 w-auto" />
+      </div>
+
+      <!-- Right: Navigation -->
+      <div class="flex space-x-6 font-semibold text-sm text-black uppercase">
+        <a href="#" class="hover:text-blue-600">Home</a>
+        <div class="relative group">
+          <a href="#" class="flex items-center hover:text-blue-600">About Us <span class="ml-1"></span></a>
+        </div>
+        <div class="relative group">
+          <a href="/FirstPast/index2.html" class="flex items-center hover:text-blue-600">First Page <span class="ml-1"></span></a>
+        </div>
+        <div class="relative group">
+          <a href="/gpast/index.html" class="flex items-center hover:text-blue-600"> Second Page <span class="ml-1"></span></a>
+        </div>
+        <a href="/LastPast/index8.html" class="hover:text-blue-600">Last Page</a>
+        <a href="#" class="hover:text-blue-600">Contact Us</a>
+      </div>
+    </div>
+  </nav>
+  
+  <h2>Use Case Form</h2>
+  <form id="useCaseForm">
+    <!-- Use Case ID -->
+    <label for="useCaseIdSelect">Use Case ID</label>
+    <select id="useCaseIdSelect" name="useCaseIdSelect" onchange="toggleInputField(this, 'customUseCaseId')">
+      <option value="">--Select--</option>
+      <option value="UC-001">UC-001</option>
+      <option value="UC-002">UC-002</option>
+      <option value="UC-003">UC-003</option>
+      <option value="UC-004">UC-004</option>
+      <option value="UC-005">UC-005</option>
+      <option value="UC-006">UC-006</option>
+      <option value="UC-007">UC-007</option>
+      <option value="UC-008">UC-008</option>
+      <option value="UC-009">UC-009</option>
+      <option value="UC-010">UC-010</option>
+      <option value="Other">Other</option>
+      <option value="UC-011">UC-011</option>
+      <option value="UC-012">UC-012</option>
+    </select>
+    <input type="text" id="customUseCaseId" name="customUseCaseId" placeholder="Enter Use Case ID" style="display:none; margin-top: 10px;" />
+
+    <!-- Use Case Name -->
+    <label for="useCaseNameSelect">Use Case Name</label>
+    <select id="useCaseNameSelect" name="useCaseNameSelect" onchange="toggleInputField(this, 'customUseCaseName')">
+      <option value="">--Select--</option>
+      <option value="Account Management">Account Management</option>
+      <option value="Contact Management">Contact Management</option>
+      <option value="Opportunity Management">Opportunity Management</option>
+      <option value="Opportunity Line-item Management">Opportunity Line-item Management</option>
+      <option value="Qoutation Management">Qoutation Management</option>
+      <option value="Price Management">Price Management</option>
+      <option value="Product Management">Product  Management</option>
+      <option value="Expense Management">Expense Management</option>
+      <option value="Visit Management"> Management</option>
+      <option value="Other">Other</option>
+    </select>
+    <input type="text" id="customUseCaseName" name="customUseCaseName" placeholder="Enter Use Case Name" style="display:none; margin-top: 10px;" />
+
+    <!-- Actors -->
+    <label for="actorsSelect">Actors</label>
+    <select id="actorsSelect" name="actorsSelect" multiple>
+      <option value="Admin">Admin System</option>
+      <option value="User">Sales User</option>
+      <option value="RM">RM</option>
+      <option value="Other">Other</option>
+    </select>
+    <input type="text" id="customActors" name="customActors" placeholder="Enter Custom Actor" style="display:none; margin-top: 10px;" />
+
+    <!-- Text Areas -->
+    <label for="description">Description</label>
+    <textarea id="description" name="description"></textarea>
+
+    <label for="assumption">Assumption</label>
+    <textarea id="assumption" name="assumption"></textarea>
+
+    <label for="preCondition">Pre-Condition</label>
+    <textarea id="preCondition" name="preCondition"></textarea>
+
+    <label for="normalFlow">Normal Flow</label>
+    <input type="text" id="normalFlow" name="normalFlow" />
+
+    <!-- Optional Fields with N/A -->
+    <label for="notifications">
+      Notifications
+      <label><input type="radio" name="notificationsNA" onclick="toggleNA(this, 'notifications')" /> N/A</label>
+    </label>
+    <textarea id="notifications" name="notifications"></textarea>
+
+    <label for="Validations">
+      Validations
+      <label><input type="radio" name="ValidationsNA" onclick="toggleNA(this, 'Validations')" /> N/A</label>
+    </label>
+    <textarea id="Validations" name="Validations"></textarea>
+
+    <label for="Alternate Flow">
+      Alternate Flow
+      <label><input type="radio" name="Alternate FlowNA" onclick="toggleNA(this, 'Alternate Flow')" /> N/A</label>
+    </label>
+    <textarea id="Alternate Flow" name="Alternate Flow"></textarea>
+
+    <label for="references">
+      References
+      <label><input type="radio" name="referencesNA" onclick="toggleNA(this, 'references')" /> N/A</label>
+    </label>
+    <textarea id="references" name="references"></textarea>
+
+    <!-- Custom Fields -->
+    <label>Fields</label>
+    <div id="fieldsContainer"></div>
+    <button type="button" onclick="addField()">Add Field</button><br><br>
+
+    <!-- Form Buttons -->
+    <button type="submit">Submit</button>
+    <button type="button" id="generateDocx">Export to Word (.docx)</button>
+  </form>
+
+  <script>
+    // Toggle input field when "Other" is selected
+    function toggleInputField(selectElement, inputId) {
+      const inputField = document.getElementById(inputId);
+      if (selectElement.value === "Other") {
+        inputField.style.display = "block";
+      } else {
+        inputField.style.display = "none";
+        inputField.value = "";
+      }
+    }
+
+    // Toggle N/A for textareas
+    function toggleNA(radioElement, textareaId) {
+      const textarea = document.getElementById(textareaId);
+      if (radioElement.checked) {
+        textarea.disabled = true;
+        textarea.value = "N/A";
+      } else {
+        textarea.disabled = false;
+        textarea.value = "";
+      }
+    }
+
+    // Add custom fields
+    function addField() {
+      const container = document.getElementById("fieldsContainer");
+      const fieldGroup = document.createElement("div");
+      fieldGroup.className = "field-group";
+      
+      fieldGroup.innerHTML = `
+        <input type="text" placeholder="Field Name" class="field-name" />
+        <div class="sub-fields">
+          <input type="text" placeholder="Data Type" />
+          <input type="text" placeholder="Constraints" />
+          <input type="text" placeholder="Default Value" />
+        </div>
+      `;
+      container.appendChild(fieldGroup);
+    }
+
+    // Form submission
+    document.getElementById("useCaseForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      alert("Form submitted successfully!");
+      // Here you would typically send the form data to a server
+    });
+
+    // Export to Word document
+    document.getElementById("generateDocx").addEventListener("click", function() {
+      // Get form values
+      const useCaseId = document.getElementById("useCaseIdSelect").value === "Other" ? 
+        document.getElementById("customUseCaseId").value : 
+        document.getElementById("useCaseIdSelect").value;
+      
+      const useCaseName = document.getElementById("useCaseNameSelect").value === "Other" ? 
+        document.getElementById("customUseCaseName").value : 
+        document.getElementById("useCaseNameSelect").value;
+      
+      const actors = Array.from(document.getElementById("actorsSelect").selectedOptions)
+        .map(option => option.value)
+        .join(", ");
+      
+      // Create a simple HTML content for the document
+      const content = `
+        <h1>Use Case Document</h1>
+        <h2>${useCaseId}: ${useCaseName}</h2>
+        <h3>Actors</h3>
+        <p>${actors}</p>
+        <h3>Description</h3>
+        <p>${document.getElementById("description").value}</p>
+        <h3>Assumptions</h3>
+        <p>${document.getElementById("assumption").value}</p>
+        <h3>Pre-Conditions</h3>
+        <p>${document.getElementById("preCondition").value}</p>
+        <h3>Normal Flow</h3>
+        <p>${document.getElementById("normalFlow").value}</p>
+      `;
+      
+      // Convert HTML to Word document
+      const blob = new Blob([content], { type: "application/msword" });
+      saveAs(blob, "UseCase_" + useCaseId + ".doc");
+    });
+  </script>
+</body>
+</html>
